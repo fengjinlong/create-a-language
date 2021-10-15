@@ -126,7 +126,7 @@ class Prog extends AstNode {
     this.stmts = stmts
   }
   public dump(prefix: string): void {
-    console.log(prefix + 'Prog')
+    // console.log(prefix + 'Prog111')
     this.stmts.forEach(x => x.dump(prefix + '\t'))
   }
 }
@@ -223,12 +223,14 @@ class Parser {
       //每次循环解析一个语句
       //尝试一下函数声明
       stmt = this.parseFunctionDecl()
+
+      // 判断是不是 函数声明
       if (Statement.isStatementNode(stmt)) {
         stmts.push(stmt)
         continue
       }
 
-      //如果前一个尝试不成功，那么再尝试一下函数调用
+      //如果前一个尝试不成功，那么再尝试一下  函数调用
       stmt = this.parseFunctionCall()
       if (Statement.isStatementNode(stmt)) {
         stmts.push(stmt)
@@ -240,6 +242,15 @@ class Parser {
         break
       }
     }
+    console.log('stmts--')
+    console.log(stmts)
+    // [
+    //   FunctionDecl {
+    //     name: 'sayHello',
+    //     body: FunctionBody { stmts: [Array] }
+    //   },
+    //   FunctionCall { definition: null, name: 'sayHello', parameters: [] }
+    // ]
     return new Prog(stmts)
   }
 
@@ -456,6 +467,8 @@ class Intepretor extends AstVisitor {
         retVal = this.runFunction(functionCall)
       }
     }
+ 
+    // 返回值
     return retVal
   }
   visitFunctionBody(functionBody: FunctionBody): any {
@@ -470,6 +483,7 @@ class Intepretor extends AstVisitor {
       //内置函数
       if (functionCall.parameters.length > 0) {
         console.log(functionCall.parameters[0])
+        console.log(functionCall.parameters)
       } else {
         console.log()
       }
@@ -490,7 +504,7 @@ function compileAndRun() {
   //词法分析
   let tokenizer = new Tokenizer(tokenArray)
   console.log('\n程序所使用的Token:')
-  // console.log(tokenizer)
+  console.log(tokenizer)
   //   Tokenizer {
   //   pos: 0,
   //   tokens: [
@@ -517,20 +531,43 @@ function compileAndRun() {
   }
 
   //语法分析
-  let prog:Prog = new Parser(tokenizer).parseProg();
-  console.log("\n语法分析后的AST:");
-  console.log(prog)
-  prog.dump("");
+  let prog: Prog = new Parser(tokenizer).parseProg()
+  console.log('\n语法分析后的AST:')
+  prog.dump('--')
+  // FunctionCall sayHello, not resolved
+  
+  // console.log(prog)
+  // Prog {
+  //   stmts: [
+  //     FunctionDecl { name: 'sayHello', body: [FunctionBody] },
+  //     FunctionCall { definition: null, name: 'sayHello', parameters: [] }
+  //   ]
+  // }
 
-  // //语义分析
-  // new RefResolver().visitProg(prog);
-  // console.log("\n语义分析后的AST，注意自定义函数的调用已被消解:");
-  // prog.dump("");
+
+
+  // //语义分析 找到函数声明
+  new RefResolver().visitProg(prog);
+  console.log("\n语义分析后的AST，注意自定义函数的调用已被消解:");
+  prog.dump("/ / ");
+  // FunctionCall sayHello, resolved
+
+  // console.log(prog)
+  // Prog {
+  //   stmts: [
+  //     FunctionDecl { name: 'sayHello', body: [FunctionBody] },
+  //     FunctionCall {
+  //       definition: [FunctionDecl],
+  //       name: 'sayHello',
+  //       parameters: []
+  //     }
+  //   ]
+  // }
 
   // //运行程序
-  // console.log("\n运行当前的程序:");
-  // let retVal = new Intepretor().visitProg(prog);
-  // console.log("程序返回值：" + retVal);
+  console.log("\n运行当前的程序:");
+  let retVal = new Intepretor().visitProg(prog);
+  console.log("程序返回值：" + retVal);
 }
 
 //运行示例
