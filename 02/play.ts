@@ -655,8 +655,15 @@ class Intepretor extends AstVisitor {
 
 function compileAndRun(program: string) {
   //源代码
+  // function add () {
+  //   console.log(1);
+  //   return 2;
+  // };
+  // //
+  
+  // add()
   console.log('源代码:')
-  console.log(program)
+  // console.log(program)
 
   //词法分析
   console.log('\n词法分析结果:')
@@ -667,10 +674,12 @@ function compileAndRun(program: string) {
   tokenizer = new Tokenizer(new CharStream(program)) //重置tokenizer,回到开头。
 
   //语法分析
+  console.log('\n语法分析后的AST:')
+  console.log('1234')
   let prog: Prog = new Parser(tokenizer).parseProg()
   console.log('\n语法分析后的AST:')
   prog.dump('')
-
+console.log('123')
   //语义分析
   new RefResolver().visitProg(prog)
   console.log('\n语法分析后的AST，注意自定义函数的调用已被消解:')
@@ -686,12 +695,14 @@ function compileAndRun(program: string) {
 import * as process from 'process'
 
 // 要求命令行的第三个参数，一定是一个文件名。
+// console.log(process)
 if (process.argv.length < 3) {
   console.log('Usage: node ' + process.argv[1] + ' FILENAME')
   process.exit(1)
 }
 
-// 读取源代码
+
+// 读取源代码 test.ts
 let fs = require('fs')
 let filename = process.argv[2]
 fs.readFile(filename, 'utf8', function (err: any, data: string) {
