@@ -21,12 +21,12 @@
 
 //Token的类型
 enum TokenKind {
-  Keyword,
-  Identifier,
-  StringLiteral,
-  Seperator,
-  Operator,
-  EOF,
+  Keyword, // 0
+  Identifier, // 1
+  StringLiteral, // 2
+  Seperator, // 3
+  Operator, // 4
+  EOF, // 5
 }
 
 // 代表一个Token的数据结构
